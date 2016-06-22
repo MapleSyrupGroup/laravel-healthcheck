@@ -1,0 +1,10 @@
+{
+  "name": "maple-syrup-group/qplatform-healthcheck",
+  "autoload": {
+    "psr-4": {
+      "MapleSyrupGroup\\HealthCheck\\": "src/"
+    }
+  },
+  "minimum-stability": "dev",
+
+}
