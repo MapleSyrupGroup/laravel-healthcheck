@@ -5,6 +5,5 @@
       "MapleSyrupGroup\\HealthCheck\\": "src/"
     }
   },
-  "minimum-stability": "dev",
-
+  "minimum-stability": "dev"
 }
