@@ -4,6 +4,7 @@ namespace MapleSyrupGroup\HealthCheck\Controller;
 use MapleSyrupGroup\Annotations\Swagger\Annotations as SWG;
 use MapleSyrupGroup\HealthCheck\HealthCheck;
 use MapleSyrupGroup\QCommon\Http\Controllers\Controller as BaseController;
+use Illuminate\Http\Response;
 
 /**
  * @SWG\Resource(
@@ -64,11 +65,14 @@ class HealthCheckController extends BaseController
             $httpResponseContent .= "$text\n";
         }
 
+        $response = new Response($httpResponseContent);
+
         if($errorsOccurred) {
-            http_response_code(500);
+            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return Response($httpResponseContent);
+
+        return $response;
     }
 
 }
