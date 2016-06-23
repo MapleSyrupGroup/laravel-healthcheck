@@ -89,6 +89,12 @@ class HealthCheck
 
     public function checkRedis()
     {
+        // If the current microservice that we're healthchecking doesn't use Redis at all
+        // (i.e: it's not in composer at all, then we shouldn't bother checking redis)
+        if(!class_exists("\Predis\Client")) {
+            return;
+        }
+
         try {
             Redis::connection()->connect();
         } catch (\Exception $e) {
