@@ -5,16 +5,8 @@ use MapleSyrupGroup\Annotations\Swagger\Annotations as SWG;
 use MapleSyrupGroup\HealthCheck\HealthCheck;
 use MapleSyrupGroup\QCommon\Http\Controllers\Controller as BaseController;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Input;
 
-/**
- * @SWG\Resource(
- *   apiVersion="1.0.0",
- *   swaggerVersion="1.2",
- *   resourcePath="/healthcheck",
- *   description="Healthcheck",
- *   produces="['text/html']"
- * )
- */
 class HealthCheckController extends BaseController
 {
 
@@ -40,7 +32,7 @@ class HealthCheckController extends BaseController
     public function execute()
     {
         $httpResponseContent = '';
-        $isProd = false;
+        $isProd = (bool) Input::get('prod', true);
         $healthcheck = new HealthCheck($isProd);
 
         $healthcheck->checkExtensions();
