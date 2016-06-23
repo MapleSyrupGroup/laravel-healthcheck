@@ -1,6 +1,6 @@
 <?php
 
-namespace MapleSyrupGroup\Wallet\Util;
+namespace MapleSyrupGroup\HealthCheck;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -11,7 +11,6 @@ use Illuminate\Events\Dispatcher as EventDispatcher;
 use Illuminate\Console\Command;
 use Log;
 use PhpAmqpLib\Connection\AMQPSocketConnection;
-
 
 
 class HealthCheck

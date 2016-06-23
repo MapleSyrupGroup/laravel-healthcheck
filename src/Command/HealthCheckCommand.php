@@ -1,8 +1,8 @@
 <?php
-namespace MapleSyrupGroup\Wallet\Console\Commands;
+namespace MapleSyrupGroup\HealthCheck\Command;
 
 use Illuminate\Console\Command;
-use MapleSyrupGroup\Wallet\Util\HealthCheck;
+use MapleSyrupGroup\HealthCheck\HealthCheck;
 
 /**
  * @package MapleSyrupGroup\Wallet\Commands
