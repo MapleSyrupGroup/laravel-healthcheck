@@ -13,9 +13,7 @@ class HealthCheckController extends BaseController
     public function execute()
     {
         $httpResponseContent = '';
-        $isProd = (bool) Input::get('prod', true);
-        $healthcheck = new HealthCheck($isProd);
-
+        $healthcheck = new HealthCheck($this->isProduction());
         $healthcheck->checkExtensions();
         $healthcheck->checkExtensionsConfig();
         $healthcheck->checkDatabase();
@@ -46,6 +44,19 @@ class HealthCheckController extends BaseController
 
 
         return $response;
+    }
+
+    private function isProduction()
+    {
+        $prod = Input::get('prod', true);
+        if(is_string($prod)) {
+            if($prod === "false") {
+                $prod = false;
+            } else {
+                $prod = true;
+            }
+        }
+        return $prod;
     }
 
 }

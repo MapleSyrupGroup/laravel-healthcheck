@@ -34,6 +34,7 @@ class HealthCheck
      */
     public function __construct($isProduction)
     {
+        var_dump(__METHOD__, $isProduction); exit;
         $this->isProduction = $isProduction;
     }
 
