@@ -12,7 +12,6 @@ use Illuminate\Console\Command;
 use Log;
 use PhpAmqpLib\Connection\AMQPSocketConnection;
 
-
 class HealthCheck
 {
 

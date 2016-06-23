@@ -4,9 +4,6 @@ namespace MapleSyrupGroup\HealthCheck\Command;
 use Illuminate\Console\Command;
 use MapleSyrupGroup\HealthCheck\HealthCheck;
 
-/**
- * @package MapleSyrupGroup\Wallet\Commands
- */
 class HealthCheckCommand extends Command
 {
 
@@ -16,7 +13,6 @@ class HealthCheckCommand extends Command
 
     public function fire()
     {
-
         $isProduction = $this->isProduction();
         $this->healthcheck = new HealthCheck($isProduction);
 
@@ -54,6 +50,8 @@ class HealthCheckCommand extends Command
 
 }
 
+// This code is for future reference. Don't remove it. The healthcheck script will
+// Cover more things like these in the future
 //$walletDrive = Flysystem::connection(config('payments.file_drivers.main_storage'));
 //$tmpDir = Flysystem::connection(config('payments.file_drivers.payments_tmp'));
 //        var_dump(__METHOD__, get_class(Queue::connection())); exit;

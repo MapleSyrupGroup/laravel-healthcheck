@@ -10,25 +10,6 @@ use Illuminate\Support\Facades\Input;
 class HealthCheckController extends BaseController
 {
 
-    /**
-     * @param UserLedgerGateway $userLedgerGateway
-     */
-//    public function __construct(UserLedgerGateway $userLedgerGateway)
-//    {
-//    }
-
-    /**
-     * @SWG\Api(
-     *  path="/healthcheck",
-     *  @SWG\Operation(
-     *      method="GET",
-     *      summary="Healthcheck",
-     *      notes="Healthcheck",
-     *      type="void",
-     *      authorizations={},
-     *   )
-     * )
-     */
     public function execute()
     {
         $httpResponseContent = '';

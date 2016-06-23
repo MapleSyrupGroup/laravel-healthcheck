@@ -7,12 +7,7 @@ use MapleSyrupGroup\HealthCheck\Command\HealthCheckCommand;
 use Illuminate\Support\Facades\Route;
 use MapleSyrupGroup\HealthCheck\HealthCheck;
 use MapleSyrupGroup\HealthCheck\Controller\HealthCheckController;
-//use DebugBar\DebugBar;
 
-/**
- * Class WalletServiceProvider
- * @package MapleSyrupGroup\Wallet
- */
 class HealthCheckServiceProvider extends ServiceProvider
 {
     /**
@@ -32,12 +27,10 @@ class HealthCheckServiceProvider extends ServiceProvider
 
     public function boot()
     {
-
         if(class_exists("Debugbar")) {
             \Debugbar::disable();
         }
 
         Route::get('healthcheck', '\MapleSyrupGroup\HealthCheck\Controller\HealthCheckController@execute');
     }
-
 }
