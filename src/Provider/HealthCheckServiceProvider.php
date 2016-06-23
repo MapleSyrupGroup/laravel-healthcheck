@@ -33,7 +33,9 @@ class HealthCheckServiceProvider extends ServiceProvider
     public function boot()
     {
 
-        \Debugbar::disable();
+        if(class_exists("Debugbar")) {
+            \Debugbar::disable();
+        }
 
         Route::get('healthcheck', '\MapleSyrupGroup\HealthCheck\Controller\HealthCheckController@execute');
     }
