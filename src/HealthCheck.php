@@ -49,7 +49,7 @@ class HealthCheck
         $disabledExtensions = ['xdebug', 'blackfire'];
         foreach($disabledExtensions as $ext) {
             if(extension_loaded($ext)) {
-                $this->addFailureMessage('Extension ' . $ext . 'should not be enabled');
+                $this->addFailureMessage('Extension ' . $ext . ' should not be enabled');
             }
         }
 
