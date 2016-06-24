@@ -189,8 +189,6 @@ class HealthCheck
         $this->addMessage(self::MESSAGE_TYPE_FAILURE, $message);
     }
 
-<<<<<<< HEAD
-=======
     public function checkSession()
     {
         if (session_status() !== PHP_SESSION_NONE) {
@@ -199,6 +197,4 @@ class HealthCheck
         }
         $this->addSuccessMessage('Sessions are disabled');
     }
-
->>>>>>> feature/all-cache-and-sessions
 }
