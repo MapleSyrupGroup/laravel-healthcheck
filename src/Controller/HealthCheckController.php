@@ -6,37 +6,8 @@ use MapleSyrupGroup\HealthCheck\HealthCheck;
 use MapleSyrupGroup\QCommon\Http\Controllers\Controller as BaseController;
 use Illuminate\Http\Response;
 
-/**
- * @SWG\Resource(
- *   apiVersion="1.0.0",
- *   swaggerVersion="1.2",
- *   resourcePath="/healthcheck",
- *   description="Healthcheck",
- *   produces="['text/html']"
- * )
- */
 class HealthCheckController extends BaseController
 {
-
-    /**
-     * @param UserLedgerGateway $userLedgerGateway
-     */
-//    public function __construct(UserLedgerGateway $userLedgerGateway)
-//    {
-//    }
-
-    /**
-     * @SWG\Api(
-     *  path="/healthcheck",
-     *  @SWG\Operation(
-     *      method="GET",
-     *      summary="Healthcheck",
-     *      notes="Healthcheck",
-     *      type="void",
-     *      authorizations={},
-     *   )
-     * )
-     */
     public function execute()
     {
         $httpResponseContent = '';
@@ -53,7 +24,7 @@ class HealthCheckController extends BaseController
             getenv('RABBITMQ_PASSWORD'),
             getenv('RABBITMQ_VHOST')
         );
-        $healthcheck->checkRedis();
+        $healthcheck->checkCache();
 
         // Begin processing console messages
         $errorsOccurred = false;

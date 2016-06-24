@@ -23,6 +23,7 @@ class HealthCheckCommand extends Command
         $this->healthcheck->checkExtensions();
         $this->healthcheck->checkExtensionsConfig();
         $this->healthcheck->checkDatabase();
+        $this->healthcheck->checkSession();
         $this->healthcheck->checkRabbit(
             getenv('RABBITMQ_HOST'),
             getenv('RABBITMQ_PORT'),
@@ -30,7 +31,7 @@ class HealthCheckCommand extends Command
             getenv('RABBITMQ_PASSWORD'),
             getenv('RABBITMQ_VHOST')
         );
-        $this->healthcheck->checkRedis();
+        $this->healthcheck->checkCache();
 
         // Begin outputting console messages
         foreach($this->healthcheck->getMessages() as $message) {
