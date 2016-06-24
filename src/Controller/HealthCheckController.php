@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Input;
 
 class HealthCheckController extends BaseController
 {
-
     public function execute()
     {
         $httpResponseContent = '';
@@ -24,7 +23,7 @@ class HealthCheckController extends BaseController
             getenv('RABBITMQ_PASSWORD'),
             getenv('RABBITMQ_VHOST')
         );
-        $healthcheck->checkRedis();
+        $healthcheck->checkCache();
 
         // Begin processing console messages
         $errorsOccurred = false;

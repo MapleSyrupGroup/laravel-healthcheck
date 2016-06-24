@@ -2,6 +2,7 @@
 
 namespace MapleSyrupGroup\HealthCheck;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -35,6 +36,7 @@ class HealthCheck
     public function __construct($isProduction)
     {
         $this->isProduction = $isProduction;
+
     }
 
     public function checkExtensionsConfig()
@@ -86,20 +88,24 @@ class HealthCheck
 
     }
 
-    public function checkRedis()
+    public function checkCache()
     {
-        // If the current microservice that we're healthchecking doesn't use Redis at all
-        // (i.e: it's not in composer at all, then we shouldn't bother checking redis)
-        if(!class_exists("\Predis\Client")) {
-            return;
-        }
+        $stores = Config::get('cache.stores');
+        foreach($stores as $storeKey => $store) {
+            if(!isset($store['driver'])) {
+                $this->addFailureMessage('Missing driver for cache store: ' . $storeKey);
+                return;
+            }
 
-        try {
-            Redis::connection()->connect();
-        } catch (\Exception $e) {
-            $this->errors[] = "Can't connect to Redis. Reason: " . $e->getMessage();
+            $cacheDriver = $store['driver'];
+            try {
+                Cache::store($store['driver'])->has('item');
+                $this->addSuccessMessage('Cache connection for driver: ' . $cacheDriver);
+            } catch(\Exception $e) {
+                $this->addFailureMessage(sprintf("Cache connection for driver: %s. Reason: %s", $cacheDriver, $e->getMessage()));
+                continue;
+            }
         }
-        $this->addSuccessMessage('Redis Connection');
     }
 
     public function checkExtensions()
@@ -110,7 +116,7 @@ class HealthCheck
 //      php56w-pecl-memcache php56w-soap  php56w-xml php56w-xmlrpc php56w-pdo newrelic-php5 \
 //      php56w-pecl-gnupg-geterrorinfo
 
-        $extensions = ['pdo', 'pdo_mysql', 'curl', 'gd', 'mbstring',  'mcrypt', 'soap', 'xml'];
+        $extensions = ['apcu', 'pdo', 'pdo_mysql', 'curl', 'gd', 'mbstring',  'mcrypt', 'soap', 'xml'];
         if($this->isProduction) {
             $extensions += ['gnupg', 'newrelic'];
         }
@@ -128,6 +134,7 @@ class HealthCheck
 
     public function checkDatabase()
     {
+        // @todo - get all connection configs
         try {
             DB::connection()->getDatabaseName();
             $this->addSuccessMessage('MySQL Connection');
@@ -182,4 +189,16 @@ class HealthCheck
         $this->addMessage(self::MESSAGE_TYPE_FAILURE, $message);
     }
 
+<<<<<<< HEAD
+=======
+    public function checkSession()
+    {
+        if (session_status() !== PHP_SESSION_NONE) {
+            $this->addFailureMessage('Sessions are initialized');
+            return;
+        }
+        $this->addSuccessMessage('Sessions are disabled');
+    }
+
+>>>>>>> feature/all-cache-and-sessions
 }
