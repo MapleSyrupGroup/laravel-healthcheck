@@ -16,6 +16,7 @@ class HealthCheckController extends BaseController
         $healthcheck->checkExtensions();
         $healthcheck->checkExtensionsConfig();
         $healthcheck->checkDatabase();
+        $healthcheck->checkSession();
         $healthcheck->checkRabbit(
             getenv('RABBITMQ_HOST'),
             getenv('RABBITMQ_PORT'),
