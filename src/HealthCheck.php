@@ -116,7 +116,7 @@ class HealthCheck
 //      php56w-pecl-memcache php56w-soap  php56w-xml php56w-xmlrpc php56w-pdo newrelic-php5 \
 //      php56w-pecl-gnupg-geterrorinfo
 
-        $extensions = ['apcu', 'pdo', 'pdo_mysql', 'curl', 'gd', 'mbstring',  'mcrypt', 'soap', 'xml'];
+        $extensions = ['pdo', 'pdo_mysql', 'curl', 'gd', 'mbstring',  'mcrypt', 'soap', 'xml'];
         if($this->isProduction) {
             $extensions += ['gnupg', 'newrelic'];
         }
