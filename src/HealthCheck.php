@@ -91,7 +91,7 @@ class HealthCheck
     public function checkCache()
     {
         $stores = Config::get('cache.stores');
-        
+
         if($stores === null || empty($stores)) {
             $this->addSuccessMessage('No cache config found. Nothing to check');
             return;
@@ -141,11 +141,38 @@ class HealthCheck
     public function checkDatabase()
     {
         // @todo - get all connection configs
+        $connections = Config::get('database.connections');
+
+        if($connections === null || empty($connections)) {
+            $this->addSuccessMessage('No cache config found. Nothing to check');
+            return;
+        }
+
+
+        foreach($connections as $connectionKey => $connection) {
+            if(!isset($connection['driver'])) {
+                $this->addFailureMessage('Missing driver for database connections: ' . $connectionKey);
+                return;
+            }
+
+            $connDriver = $connection['driver'];
+            try {
+                // @todo - change from Store() to something DB specific - perhaps a connect() method
+                Database::store($connDriver)->has('item');
+                $this->addSuccessMessage('Cache connection for driver: ' . $cacheDriver);
+            } catch(\Exception $e) {
+                $this->addFailureMessage(sprintf("Cache connection for driver: %s. Reason: %s", $cacheDriver, $e->getMessage()));
+                continue;
+            }
+
+        }
+
         try {
+            // Check default configureds
             DB::connection()->getDatabaseName();
-            $this->addSuccessMessage('MySQL Connection');
+            $this->addSuccessMessage('Default Database Connection');
         } catch (\Exception $e) {
-            $this->addFailureMessage("Can't connect to DB. Reason: " . $e->getMessage());
+            $this->addFailureMessage("Default Database Connection. Reason: " . $e->getMessage());
         }
     }
 
