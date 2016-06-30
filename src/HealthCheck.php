@@ -148,31 +148,28 @@ class HealthCheck
             return;
         }
 
-
         foreach($connections as $connectionKey => $connection) {
+
             if(!isset($connection['driver'])) {
-                $this->addFailureMessage('Missing driver for database connections: ' . $connectionKey);
+                $this->addFailureMessage('Missing driver for database connection: ' . $connectionKey);
                 return;
             }
 
-            $connDriver = $connection['driver'];
             try {
                 // @todo - change from Store() to something DB specific - perhaps a connect() method
-                Database::store($connDriver)->has('item');
-                $this->addSuccessMessage('Cache connection for driver: ' . $cacheDriver);
+                DB::connection($connectionKey)->getDatabaseName();
+                $this->addSuccessMessage(sprintf('Database connection %s', $connectionKey));
             } catch(\Exception $e) {
-                $this->addFailureMessage(sprintf("Cache connection for driver: %s. Reason: %s", $cacheDriver, $e->getMessage()));
-                continue;
+                $this->addFailureMessage(sprintf("Database connection: %s. Unable to connect. Reason: %s", $connectionKey, $e->getMessage()));
             }
-
         }
 
         try {
             // Check default configureds
             DB::connection()->getDatabaseName();
-            $this->addSuccessMessage('Default Database Connection');
+            $this->addSuccessMessage('Default database connection found');
         } catch (\Exception $e) {
-            $this->addFailureMessage("Default Database Connection. Reason: " . $e->getMessage());
+            $this->addFailureMessage("Default database connection not found. Reason: " . $e->getMessage());
         }
     }
 
