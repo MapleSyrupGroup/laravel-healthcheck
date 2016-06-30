@@ -91,6 +91,12 @@ class HealthCheck
     public function checkCache()
     {
         $stores = Config::get('cache.stores');
+        
+        if($stores === null || empty($stores)) {
+            $this->addSuccessMessage('No cache config found. Nothing to check');
+            return;
+        }
+
         foreach($stores as $storeKey => $store) {
             if(!isset($store['driver'])) {
                 $this->addFailureMessage('Missing driver for cache store: ' . $storeKey);
