@@ -42,18 +42,13 @@ class HealthCheckCommand extends Command
     }
 
     /**
+     * If 'env' is not passed, we default it to null, thus the null check.
+     *
      * @return bool
      */
     public function isProduction()
     {
-        return $this->option('env') === 'production';
+        return $this->option('env') === null || $this->option('env') === 'production';
     }
-
+    
 }
-
-// This code is for future reference. Don't remove it. The healthcheck script will
-// Cover more things like these in the future
-//$walletDrive = Flysystem::connection(config('payments.file_drivers.main_storage'));
-//$tmpDir = Flysystem::connection(config('payments.file_drivers.payments_tmp'));
-//        var_dump(__METHOD__, get_class(Queue::connection())); exit;
-//        var_dump(__METHOD__, Queue::connected()); exit;

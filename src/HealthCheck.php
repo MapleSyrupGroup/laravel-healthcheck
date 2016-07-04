@@ -41,26 +41,22 @@ class HealthCheck
 
     public function checkExtensionsConfig()
     {
-        // These are production only checks, so if we're not on prod, we bail out.
-        if(!$this->isProduction) {
-            $this->addSuccessMessage('PHP Extension Config');
-            return;
-        }
 
         // Disabled Extensions
         $disabledExtensions = ['xdebug', 'blackfire'];
         foreach($disabledExtensions as $ext) {
             if(extension_loaded($ext)) {
-                $this->addFailureMessage('Extension ' . $ext . ' should not be enabled');
+                $this->addFailureMessage('PHP Extension: ' . $ext . ' is enabled');
+                continue;
             }
+            $this->addSuccessMessage('PHP Extension ' . $ext . ' is disabled');
         }
 
         // Opcache check - check enabled config setting
-        if(ini_get('opcache.enable') == 0) {
-            $this->addFailureMessage('Opcache is not enabled');
-        }
+        ini_get('opcache.enable') == 0
+            ? $this->addFailureMessage('Opcache is disabled')
+            : $this->addSuccessMessage('Opcache is enabled');
 
-        $this->addSuccessMessage('PHP Extension Config');
     }
 
 
@@ -82,7 +78,7 @@ class HealthCheck
 
         } catch(\Exception $e) {
             $msg = !empty($e->getMessage()) ? ' Reason: ' . $e->getMessage() : '';
-            $this->addFailureMessage('Rabbit connection failed' . $msg);
+            $this->addFailureMessage('RabbitMQ connection failed' . $msg);
         }
         restore_error_handler();
 
@@ -135,7 +131,7 @@ class HealthCheck
             return;
         }
 
-        $this->addSuccessMessage('PHP Extensions');
+        $this->addSuccessMessage('PHP Extensions: ' . implode(', ', $extensions));
     }
 
     public function checkDatabase()
