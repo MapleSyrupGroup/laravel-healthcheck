@@ -12,6 +12,7 @@ use Illuminate\Events\Dispatcher as EventDispatcher;
 use Illuminate\Console\Command;
 use Log;
 use PhpAmqpLib\Connection\AMQPSocketConnection;
+use Exception;
 
 class HealthCheck
 {
@@ -65,7 +66,7 @@ class HealthCheck
         try {
 
             set_error_handler(function($errno, $errstr, $errfile, $errline) {
-                throw new \Exception($errstr);
+                throw new Exception($errstr);
             });
 
             $conn = new AMQPSocketConnection(
@@ -73,10 +74,10 @@ class HealthCheck
             );
 
             if(!$conn->isConnected()) {
-                throw new \Exception();
+                throw new Exception();
             }
 
-        } catch(\Exception $e) {
+        } catch(Exception $e) {
             $msg = !empty($e->getMessage()) ? ' Reason: ' . $e->getMessage() : '';
             $this->addFailureMessage('RabbitMQ connection failed' . $msg);
         }
@@ -103,7 +104,7 @@ class HealthCheck
             try {
                 Cache::store($store['driver'])->has('item');
                 $this->addSuccessMessage('Cache connection for driver: ' . $cacheDriver);
-            } catch(\Exception $e) {
+            } catch(Exception $e) {
                 $this->addFailureMessage(sprintf("Cache connection for driver: %s. Reason: %s", $cacheDriver, $e->getMessage()));
                 continue;
             }
@@ -140,7 +141,7 @@ class HealthCheck
         $connections = Config::get('database.connections');
 
         if($connections === null || empty($connections)) {
-            $this->addSuccessMessage('No cache config found. Nothing to check');
+            $this->addSuccessMessage('No database config found. Nothing to check');
             return;
         }
 
@@ -155,7 +156,7 @@ class HealthCheck
                 // @todo - change from Store() to something DB specific - perhaps a connect() method
                 DB::connection($connectionKey)->getDatabaseName();
                 $this->addSuccessMessage(sprintf('Database connection %s', $connectionKey));
-            } catch(\Exception $e) {
+            } catch(Exception $e) {
                 $this->addFailureMessage(sprintf("Database connection: %s. Unable to connect. Reason: %s", $connectionKey, $e->getMessage()));
             }
         }
@@ -164,7 +165,7 @@ class HealthCheck
             // Check default configureds
             DB::connection()->getDatabaseName();
             $this->addSuccessMessage('Default database connection found');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->addFailureMessage("Default database connection not found. Reason: " . $e->getMessage());
         }
     }
@@ -172,7 +173,7 @@ class HealthCheck
     /**
      * @param string $type
      * @param string $message
-     * @throws \Exception
+     * @throws Exception
      */
     private function addMessage($type, $message)
     {
@@ -184,7 +185,7 @@ class HealthCheck
                 $this->messages[] = [self::MESSAGE_TYPE_FAILURE, '[FAIL] ' . $message];
                 break;
             default:
-                throw new \Exception('Unknown error type added: ' . $type);
+                throw new Exception('Unknown error type added: ' . $type);
                 break;
         }
     }
@@ -199,7 +200,7 @@ class HealthCheck
 
     /**
      * @param string $message
-     * @throws \Exception
+     * @throws Exception
      */
     private function addSuccessMessage($message)
     {
@@ -208,7 +209,7 @@ class HealthCheck
 
     /**
      * @param string $message
-     * @throws \Exception
+     * @throws Exception
      */
     private function addFailureMessage($message)
     {
