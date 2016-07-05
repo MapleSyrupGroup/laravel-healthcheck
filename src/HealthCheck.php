@@ -239,4 +239,26 @@ class HealthCheck
         }
         $this->addSuccessMessage('Sessions are disabled');
     }
+
+    /**
+     * Some directories are required to be writeable by the fpm user. Let's check them.
+     */
+    public function checkPermissions()
+    {
+        $writeableDirectories = [
+            base_path('bootstrap/cache'),
+            storage_path('logs/laravel.log'),
+            storage_path('app'),
+            storage_path('framework/cache')
+        ];
+
+        foreach($writeableDirectories as $dir) {
+            if(!is_writable($dir)) {
+                $this->addFailureMessage(sprintf('Directory %s is not writeable', $dir));
+                continue;
+            }
+            $this->addSuccessMessage(sprintf('Directory %s is writeable', $dir));
+        }
+
+    }
 }

@@ -20,8 +20,9 @@ class HealthCheckController extends BaseController
         $healthcheck = new HealthCheck($this->isProduction());
         $healthcheck->checkExtensions();
         $healthcheck->checkExtensionsConfig();
-        $healthcheck->checkDatabase();
+        $healthcheck->checkPermissions();
         $healthcheck->checkSession();
+        $healthcheck->checkDatabase();
         $healthcheck->checkRabbit(
             getenv('RABBITMQ_HOST'),
             getenv('RABBITMQ_PORT'),
@@ -44,6 +45,7 @@ class HealthCheckController extends BaseController
         $healthcheck = new HealthCheck($this->isProduction());
         $healthcheck->checkExtensions();
         $healthcheck->checkExtensionsConfig();
+        $healthcheck->checkPermissions();
         $healthcheck->checkSession();
 
         return $this->generateResponse($healthcheck);
