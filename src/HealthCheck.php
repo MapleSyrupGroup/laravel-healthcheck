@@ -37,12 +37,11 @@ class HealthCheck
     public function __construct($isProduction)
     {
         $this->isProduction = $isProduction;
-
     }
 
+
     /**
-     * HealthCheck constructor.
-     * @param bool $isProduction
+     * Checking if an extension is installed is not enough, we have configs we would like to inspect too. Such as opcache.enable=1
      */
     public function checkExtensionsConfig()
     {
@@ -64,7 +63,15 @@ class HealthCheck
 
     }
 
-
+    /**
+     * Make an AMQP connection to our rabbit server
+     *
+     * @param string $host
+     * @param string $port
+     * @param string $login
+     * @param string $password
+     * @param string $vhost
+     */
     public function checkRabbit($host, $port, $login, $password, $vhost)
     {
         try {
@@ -86,9 +93,11 @@ class HealthCheck
             $this->addFailureMessage('RabbitMQ connection failed' . $msg);
         }
         restore_error_handler();
-
     }
 
+    /**
+     * All cache backends in cache.php are being connected to here.
+     */
     public function checkCache()
     {
         $stores = Config::get('cache.stores');
@@ -106,6 +115,7 @@ class HealthCheck
 
             $cacheDriver = $store['driver'];
             try {
+                // This is us now probing the cache backend, on a cheap has() call.
                 Cache::store($store['driver'])->has('item');
                 $this->addSuccessMessage('Cache connection for driver: ' . $cacheDriver);
             } catch(Exception $e) {
@@ -115,6 +125,9 @@ class HealthCheck
         }
     }
 
+    /**
+     * Our mandatory list of php extensions here are being checked
+     */
     public function checkExtensions()
     {
         $extensions = ['pdo', 'pdo_mysql', 'curl', 'gd', 'mbstring',  'mcrypt', 'soap', 'xml'];
@@ -133,6 +146,9 @@ class HealthCheck
         $this->addSuccessMessage('PHP Extensions: ' . implode(', ', $extensions));
     }
 
+    /**
+     * All database backends in database.php are being connected to here.
+     */
     public function checkDatabase()
     {
         $connections = Config::get('database.connections');
@@ -158,7 +174,7 @@ class HealthCheck
         }
 
         try {
-            // Check default configureds
+            // Check default configured database name
             DB::connection()->getDatabaseName();
             $this->addSuccessMessage('Default database connection found');
         } catch (Exception $e) {
@@ -212,6 +228,9 @@ class HealthCheck
         $this->addMessage(self::MESSAGE_TYPE_FAILURE, $message);
     }
 
+    /**
+     * Sessions are not allowed on qplatform! So we make sure of this.
+     */
     public function checkSession()
     {
         if (session_status() !== PHP_SESSION_NONE) {
