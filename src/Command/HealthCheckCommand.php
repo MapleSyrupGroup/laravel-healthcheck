@@ -11,6 +11,11 @@ class HealthCheckCommand extends Command
     protected $signature = "infra:healthcheck";
     public $errors = [];
 
+    /**
+     * @var HealthCheck
+     */
+    private $healthcheck;
+
     public function fire()
     {
         $isProduction = $this->isProduction();
@@ -18,8 +23,9 @@ class HealthCheckCommand extends Command
 
         $this->healthcheck->checkExtensions();
         $this->healthcheck->checkExtensionsConfig();
-        $this->healthcheck->checkDatabase();
         $this->healthcheck->checkSession();
+        $this->healthcheck->checkPermissions();
+        $this->healthcheck->checkDatabase();
         $this->healthcheck->checkRabbit(
             getenv('RABBITMQ_HOST'),
             getenv('RABBITMQ_PORT'),

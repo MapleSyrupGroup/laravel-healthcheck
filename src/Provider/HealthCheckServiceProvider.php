@@ -31,6 +31,8 @@ class HealthCheckServiceProvider extends ServiceProvider
             \Debugbar::disable();
         }
 
-        Route::get('healthcheck', '\MapleSyrupGroup\HealthCheck\Controller\HealthCheckController@execute');
+        Route::get('healthcheck', '\MapleSyrupGroup\HealthCheck\Controller\HealthCheckController@executeReadiness');
+        Route::get('healthcheck-readiness', '\MapleSyrupGroup\HealthCheck\Controller\HealthCheckController@executeReadiness');
+        Route::get('healthcheck-liveness', '\MapleSyrupGroup\HealthCheck\Controller\HealthCheckController@executeLiveness');
     }
 }
