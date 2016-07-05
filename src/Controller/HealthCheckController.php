@@ -11,7 +11,7 @@ class HealthCheckController extends BaseController
 {
 
     /**
-     * Used for kubernetes constant liveness probe: http://kubernetes.io/docs/user-guide/pod-states/#container-probes
+     * Used for kubernetes periodic readiness probe: http://kubernetes.io/docs/user-guide/pod-states/#container-probes
      *
      * @return Response
      */
