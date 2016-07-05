@@ -40,6 +40,10 @@ class HealthCheck
 
     }
 
+    /**
+     * HealthCheck constructor.
+     * @param bool $isProduction
+     */
     public function checkExtensionsConfig()
     {
 
@@ -113,12 +117,6 @@ class HealthCheck
 
     public function checkExtensions()
     {
-        // Taken from production docker file
-//      php56w php56w-cli php56w-bcmath php56w-common php56w-gd php56w-mbstring php56w-mysqlnd \
-//      php56w-opcache php56w-pdo php56w-process  php56w-xml php56w-xmlrpc php56w-fpm php56w-mcrypt \
-//      php56w-pecl-memcache php56w-soap  php56w-xml php56w-xmlrpc php56w-pdo newrelic-php5 \
-//      php56w-pecl-gnupg-geterrorinfo
-
         $extensions = ['pdo', 'pdo_mysql', 'curl', 'gd', 'mbstring',  'mcrypt', 'soap', 'xml'];
         if($this->isProduction) {
             $extensions += ['gnupg', 'newrelic'];
@@ -137,7 +135,6 @@ class HealthCheck
 
     public function checkDatabase()
     {
-        // @todo - get all connection configs
         $connections = Config::get('database.connections');
 
         if($connections === null || empty($connections)) {
@@ -153,7 +150,6 @@ class HealthCheck
             }
 
             try {
-                // @todo - change from Store() to something DB specific - perhaps a connect() method
                 DB::connection($connectionKey)->getDatabaseName();
                 $this->addSuccessMessage(sprintf('Database connection %s', $connectionKey));
             } catch(Exception $e) {
