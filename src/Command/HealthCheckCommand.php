@@ -17,6 +17,10 @@ class HealthCheckCommand extends Command
      */
     private $healthcheck;
 
+    /**
+     * HealthCheckCommand constructor.
+     * @param HealthCheck $healthCheck
+     */
     public function __construct(HealthCheck $healthCheck)
     {
         parent::__construct();
