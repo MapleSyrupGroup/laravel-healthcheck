@@ -6,9 +6,21 @@ use MapleSyrupGroup\HealthCheck\HealthCheck;
 use MapleSyrupGroup\QCommon\Http\Controllers\Controller as BaseController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Database\Migrations\Migrator;
 
 class HealthCheckController extends BaseController
 {
+    /**
+     * @var HealthCheck
+     */
+    private $healthCheck;
+
+    public function __construct(HealthCheck $healthCheck)
+    {
+        parent::__construct();
+        $healthCheck->setIsProduction($this->isProduction());
+        $this->healthCheck = $healthCheck;
+    }
 
     /**
      * Used for kubernetes periodic readiness probe: http://kubernetes.io/docs/user-guide/pod-states/#container-probes
@@ -17,22 +29,16 @@ class HealthCheckController extends BaseController
      */
     public function executeReadiness()
     {
-        $healthcheck = new HealthCheck($this->isProduction());
-        $healthcheck->checkExtensions();
-        $healthcheck->checkExtensionsConfig();
-        $healthcheck->checkPermissions();
-        $healthcheck->checkSession();
-        $healthcheck->checkDatabase();
-        $healthcheck->checkRabbit(
-            getenv('RABBITMQ_HOST'),
-            getenv('RABBITMQ_PORT'),
-            getenv('RABBITMQ_LOGIN'),
-            getenv('RABBITMQ_PASSWORD'),
-            getenv('RABBITMQ_VHOST')
-        );
-        $healthcheck->checkCache();
+        $this->healthCheck->checkExtensions();
+        $this->healthCheck->checkExtensionsConfig();
+        $this->healthCheck->checkPermissions();
+        $this->healthCheck->checkSession();
+        $this->healthCheck->checkDatabase();
+        $this->healthCheck->checkRabbit();
+        $this->healthCheck->checkCache();
+        $this->healthCheck->checkMigrations();
 
-        return $this->generateResponse($healthcheck);
+        return $this->generateResponse($this->healthCheck);
     }
 
     /**
@@ -42,13 +48,12 @@ class HealthCheckController extends BaseController
      */
     public function executeLiveness()
     {
-        $healthcheck = new HealthCheck($this->isProduction());
-        $healthcheck->checkExtensions();
-        $healthcheck->checkExtensionsConfig();
-        $healthcheck->checkPermissions();
-        $healthcheck->checkSession();
+        $this->healthCheck->checkExtensions();
+        $this->healthCheck->checkExtensionsConfig();
+        $this->healthCheck->checkPermissions();
+        $this->healthCheck->checkSession();
 
-        return $this->generateResponse($healthcheck);
+        return $this->generateResponse($this->healthCheck);
     }
 
     /**

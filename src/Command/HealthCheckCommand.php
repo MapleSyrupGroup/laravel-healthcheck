@@ -3,6 +3,7 @@ namespace MapleSyrupGroup\HealthCheck\Command;
 
 use Illuminate\Console\Command;
 use MapleSyrupGroup\HealthCheck\HealthCheck;
+use Illuminate\Database\Migrations\Migrator;
 
 class HealthCheckCommand extends Command
 {
@@ -16,24 +17,27 @@ class HealthCheckCommand extends Command
      */
     private $healthcheck;
 
+    /**
+     * HealthCheckCommand constructor.
+     * @param HealthCheck $healthCheck
+     */
+    public function __construct(HealthCheck $healthCheck)
+    {
+        parent::__construct();
+        $this->healthcheck = $healthCheck;
+    }
+
     public function fire()
     {
-        $isProduction = $this->isProduction();
-        $this->healthcheck = new HealthCheck($isProduction);
-
+        $this->healthcheck->setIsProduction($this->isProduction());
         $this->healthcheck->checkExtensions();
         $this->healthcheck->checkExtensionsConfig();
         $this->healthcheck->checkSession();
         $this->healthcheck->checkPermissions();
         $this->healthcheck->checkDatabase();
-        $this->healthcheck->checkRabbit(
-            getenv('RABBITMQ_HOST'),
-            getenv('RABBITMQ_PORT'),
-            getenv('RABBITMQ_LOGIN'),
-            getenv('RABBITMQ_PASSWORD'),
-            getenv('RABBITMQ_VHOST')
-        );
+        $this->healthcheck->checkRabbit();
         $this->healthcheck->checkCache();
+        $this->healthcheck->checkMigrations();
 
         // Begin outputting console messages
         foreach($this->healthcheck->getMessages() as $message) {
