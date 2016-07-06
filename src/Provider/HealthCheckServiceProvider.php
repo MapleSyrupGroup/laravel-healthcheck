@@ -22,6 +22,10 @@ class HealthCheckServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->bind(HealthCheck::class, function ($app) {
+            $migrator = $app['migrator'];
+            return new HealthCheck($migrator);
+        });
         $this->commands([HealthCheckCommand::class]);
     }
 
@@ -34,5 +38,10 @@ class HealthCheckServiceProvider extends ServiceProvider
         Route::get('healthcheck', '\MapleSyrupGroup\HealthCheck\Controller\HealthCheckController@executeReadiness');
         Route::get('healthcheck-readiness', '\MapleSyrupGroup\HealthCheck\Controller\HealthCheckController@executeReadiness');
         Route::get('healthcheck-liveness', '\MapleSyrupGroup\HealthCheck\Controller\HealthCheckController@executeLiveness');
+    }
+
+    public function provides()
+    {
+        return ['healthcheck'];
     }
 }

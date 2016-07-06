@@ -13,6 +13,7 @@ use Illuminate\Console\Command;
 use Log;
 use PhpAmqpLib\Connection\AMQPSocketConnection;
 use Exception;
+use Illuminate\Database\Migrations\Migrator;
 
 class HealthCheck
 {
@@ -31,10 +32,19 @@ class HealthCheck
     private $isProduction = false;
 
     /**
-     * HealthCheck constructor.
+     * @var Migrator
+     */
+    private $migrator;
+
+    public function __construct(Migrator $migrator)
+    {
+        $this->migrator = $migrator;
+    }
+
+    /**
      * @param bool $isProduction
      */
-    public function __construct($isProduction)
+    public function setIsProduction($isProduction)
     {
         $this->isProduction = $isProduction;
     }
@@ -66,14 +76,15 @@ class HealthCheck
     /**
      * Make an AMQP connection to our rabbit server
      *
-     * @param string $host
-     * @param string $port
-     * @param string $login
-     * @param string $password
-     * @param string $vhost
      */
-    public function checkRabbit($host, $port, $login, $password, $vhost)
+    public function checkRabbit()
     {
+
+        list($host, $port, $login, $password, $vhost) = [
+            getenv('RABBITMQ_HOST'), getenv('RABBITMQ_PORT'), getenv('RABBITMQ_LOGIN'),
+            getenv('RABBITMQ_PASSWORD'), getenv('RABBITMQ_VHOST')
+        ];
+        
         try {
 
             set_error_handler(function($errno, $errstr, $errfile, $errline) {
@@ -259,6 +270,25 @@ class HealthCheck
             }
             $this->addSuccessMessage(sprintf('Directory %s is writeable', $dir));
         }
-
     }
+
+    /**
+     * Here we check migrations for the default configured connection
+     */
+    public function checkMigrations()
+    {
+        $migrationsBasePath = base_path('database/migrations');
+        $ran = $this->migrator->getRepository()->getRan();
+        $migrationFiles = $this->migrator->getMigrationFiles($migrationsBasePath);
+
+        foreach ($migrationFiles as $migration) {
+            $isRan = in_array($migration, $ran);
+            if(!$isRan) {
+                $this->addFailureMessage(sprintf('Migration: %s has not been ran', $migration));
+                continue;
+            }
+            $this->addSuccessMessage(sprintf('Migration: %s has been ran', $migration));
+        }
+    }
+
 }
