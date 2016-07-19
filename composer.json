@@ -1,5 +1,5 @@
 {
-  "name": "maple-syrup-group/qplatform-healthcheck",
+  "name": "maple-syrup-group/healthcheck",
   "autoload": {
     "psr-4": {
       "MapleSyrupGroup\\HealthCheck\\": "src/"
