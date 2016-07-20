@@ -1,6 +1,6 @@
 # QPlatform Infrastructure Healthcheck
 
-[![Build Status](https://travis-ci.org/MapleSyrupGroup/laravel-healthcheck.svg)](https://travis-ci.org/MapleSyrupGroup/laravel-healthcheck.svg)
+[![Build Status](https://travis-ci.org/MapleSyrupGroup/laravel-healthcheck.svg)](https://travis-ci.org/MapleSyrupGroup/laravel-healthcheck)
 
 ### How to execute from command line
 
