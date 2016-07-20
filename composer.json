@@ -16,5 +16,8 @@
   "minimum-stability": "dev",
   "require": {
     "predis/predis": "^1.0"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^2.0"
   }
 }

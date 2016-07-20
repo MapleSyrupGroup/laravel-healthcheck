@@ -25,3 +25,6 @@ before_install:
 
 install:
   - travis_retry composer install --no-interaction --ignore-platform-reqs
+
+script:
+  - vendor/bin/phpcs --standard=PSR2 ./src
