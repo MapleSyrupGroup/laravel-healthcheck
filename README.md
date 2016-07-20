@@ -1,4 +1,12 @@
-# QPlatform Infrastructure Healthcheck
+# Laravel Healthcheck Package
+
+This package will scan your laravel 5.x's application config files and identify key dependencies of your application. It will check:
+
+- cache, database, queue backends can be connected to.
+- your required php version and php extensions
+- that all migrations have been run
+- that important directories are writable
+- sessions are disabled
 
 [![Build Status](https://travis-ci.org/MapleSyrupGroup/laravel-healthcheck.svg)](https://travis-ci.org/MapleSyrupGroup/laravel-healthcheck)
 
