@@ -67,9 +67,9 @@ class HealthCheckController extends BaseController
         $httpResponseContent = '';
         $errorsOccurred = false;
         // Begin processing output messages
-        foreach($healthcheck->getMessages() as $message) {
+        foreach ($healthcheck->getMessages() as $message) {
             list($messageType, $text) = $message;
-            if($messageType === HealthCheck::MESSAGE_TYPE_FAILURE) {
+            if ($messageType === HealthCheck::MESSAGE_TYPE_FAILURE) {
                 $errorsOccurred = true;
             }
             $httpResponseContent .= "$text\n";
@@ -79,7 +79,7 @@ class HealthCheckController extends BaseController
 
         $response = new Response($httpResponseContent);
 
-        if($errorsOccurred) {
+        if ($errorsOccurred) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -92,8 +92,8 @@ class HealthCheckController extends BaseController
     private function isProduction()
     {
         $prod = Input::get('prod', true);
-        if(is_string($prod)) {
-            if($prod === "false") {
+        if (is_string($prod)) {
+            if ($prod === "false") {
                 $prod = false;
             } else {
                 $prod = true;
@@ -101,5 +101,4 @@ class HealthCheckController extends BaseController
         }
         return $prod;
     }
-
 }

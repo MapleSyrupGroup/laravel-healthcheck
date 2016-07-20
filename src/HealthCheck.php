@@ -51,15 +51,16 @@ class HealthCheck
 
 
     /**
-     * Checking if an extension is installed is not enough, we have configs we would like to inspect too. Such as opcache.enable=1
+     * Checking if an extension is installed is not enough, we have configs we would like to inspect too.
+     * Such as opcache.enable=1
      */
     public function checkExtensionsConfig()
     {
 
         // Disabled Extensions
         $disabledExtensions = ['xdebug', 'blackfire'];
-        foreach($disabledExtensions as $ext) {
-            if(extension_loaded($ext)) {
+        foreach ($disabledExtensions as $ext) {
+            if (extension_loaded($ext)) {
                 $this->addFailureMessage('PHP Extension: ' . $ext . ' is enabled');
                 continue;
             }
@@ -70,7 +71,6 @@ class HealthCheck
         ini_get('opcache.enable') == 0
             ? $this->addFailureMessage('Opcache is disabled')
             : $this->addSuccessMessage('Opcache is enabled');
-
     }
 
     /**
@@ -84,22 +84,18 @@ class HealthCheck
             getenv('RABBITMQ_HOST'), getenv('RABBITMQ_PORT'), getenv('RABBITMQ_LOGIN'),
             getenv('RABBITMQ_PASSWORD'), getenv('RABBITMQ_VHOST')
         ];
-        
-        try {
 
-            set_error_handler(function($errno, $errstr, $errfile, $errline) {
+        try {
+            set_error_handler(function ($errno, $errstr, $errfile, $errline) {
                 throw new Exception($errstr);
             });
 
-            $conn = new AMQPSocketConnection(
-                $host, $port, $login, $password, $vhost
-            );
+            $conn = new AMQPSocketConnection($host, $port, $login, $password, $vhost);
 
-            if(!$conn->isConnected()) {
+            if (!$conn->isConnected()) {
                 throw new Exception();
             }
-
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $msg = !empty($e->getMessage()) ? ' Reason: ' . $e->getMessage() : '';
             $this->addFailureMessage('RabbitMQ connection failed' . $msg);
         }
@@ -113,13 +109,13 @@ class HealthCheck
     {
         $stores = Config::get('cache.stores');
 
-        if($stores === null || empty($stores)) {
+        if ($stores === null || empty($stores)) {
             $this->addSuccessMessage('No cache config found. Nothing to check');
             return;
         }
 
-        foreach($stores as $storeKey => $store) {
-            if(!isset($store['driver'])) {
+        foreach ($stores as $storeKey => $store) {
+            if (!isset($store['driver'])) {
                 $this->addFailureMessage('Missing driver for cache store: ' . $storeKey);
                 return;
             }
@@ -129,8 +125,10 @@ class HealthCheck
                 // This is us now probing the cache backend, on a cheap has() call.
                 Cache::store($store['driver'])->has('item');
                 $this->addSuccessMessage('Cache connection for driver: ' . $cacheDriver);
-            } catch(Exception $e) {
-                $this->addFailureMessage(sprintf("Cache connection for driver: %s. Reason: %s", $cacheDriver, $e->getMessage()));
+            } catch (Exception $e) {
+                $this->addFailureMessage(
+                    sprintf("Cache connection for driver: %s. Reason: %s", $cacheDriver, $e->getMessage())
+                );
                 continue;
             }
         }
@@ -141,13 +139,13 @@ class HealthCheck
      */
     public function checkExtensions()
     {
-        $extensions = ['pdo', 'pdo_mysql', 'curl', 'gd', 'mbstring',  'mcrypt', 'soap', 'xml'];
-        if($this->isProduction) {
+        $extensions = ['pdo', 'pdo_mysql', 'curl', 'gd', 'mbstring', 'mcrypt', 'soap', 'xml'];
+        if ($this->isProduction) {
             $extensions += ['gnupg', 'newrelic'];
         }
 
-        foreach($extensions as $ext) {
-            if(extension_loaded($ext)) {
+        foreach ($extensions as $ext) {
+            if (extension_loaded($ext)) {
                 continue;
             }
             $this->addFailureMessage('Extension: ' . $ext . ' not loaded. Enable it!');
@@ -164,14 +162,13 @@ class HealthCheck
     {
         $connections = Config::get('database.connections');
 
-        if($connections === null || empty($connections)) {
+        if ($connections === null || empty($connections)) {
             $this->addSuccessMessage('No database config found. Nothing to check');
             return;
         }
 
-        foreach($connections as $connectionKey => $connection) {
-
-            if(!isset($connection['driver'])) {
+        foreach ($connections as $connectionKey => $connection) {
+            if (!isset($connection['driver'])) {
                 $this->addFailureMessage('Missing driver for database connection: ' . $connectionKey);
                 return;
             }
@@ -179,8 +176,10 @@ class HealthCheck
             try {
                 DB::connection($connectionKey)->getDatabaseName();
                 $this->addSuccessMessage(sprintf('Database connection %s', $connectionKey));
-            } catch(Exception $e) {
-                $this->addFailureMessage(sprintf("Database connection: %s. Unable to connect. Reason: %s", $connectionKey, $e->getMessage()));
+            } catch (Exception $e) {
+                $this->addFailureMessage(
+                    sprintf("Database connection: %s. Unable to connect. Reason: %s", $connectionKey, $e->getMessage())
+                );
             }
         }
 
@@ -200,7 +199,7 @@ class HealthCheck
      */
     private function addMessage($type, $message)
     {
-        switch($type) {
+        switch ($type) {
             case self::MESSAGE_TYPE_SUCCESS:
                 $this->messages[] = [self::MESSAGE_TYPE_SUCCESS, '[OK] ' . $message];
                 break;
@@ -263,8 +262,8 @@ class HealthCheck
             storage_path('framework/cache')
         ];
 
-        foreach($writeableDirectories as $dir) {
-            if(!is_writable($dir)) {
+        foreach ($writeableDirectories as $dir) {
+            if (!is_writable($dir)) {
                 $this->addFailureMessage(sprintf('Directory %s is not writeable', $dir));
                 continue;
             }
@@ -283,12 +282,11 @@ class HealthCheck
 
         foreach ($migrationFiles as $migration) {
             $isRan = in_array($migration, $ran);
-            if(!$isRan) {
+            if (!$isRan) {
                 $this->addFailureMessage(sprintf('Migration: %s has not been ran', $migration));
                 continue;
             }
             $this->addSuccessMessage(sprintf('Migration: %s has been ran', $migration));
         }
     }
-
 }

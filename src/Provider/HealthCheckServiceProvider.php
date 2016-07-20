@@ -31,13 +31,22 @@ class HealthCheckServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        if(class_exists("Debugbar")) {
+        if (class_exists("Debugbar")) {
             \Debugbar::disable();
         }
 
-        Route::get('healthcheck', '\MapleSyrupGroup\HealthCheck\Controller\HealthCheckController@executeReadiness');
-        Route::get('healthcheck-readiness', '\MapleSyrupGroup\HealthCheck\Controller\HealthCheckController@executeReadiness');
-        Route::get('healthcheck-liveness', '\MapleSyrupGroup\HealthCheck\Controller\HealthCheckController@executeLiveness');
+        Route::get(
+            'healthcheck',
+            '\MapleSyrupGroup\HealthCheck\Controller\HealthCheckController@executeReadiness'
+        );
+        Route::get(
+            'healthcheck-readiness',
+            '\MapleSyrupGroup\HealthCheck\Controller\HealthCheckController@executeReadiness'
+        );
+        Route::get(
+            'healthcheck-liveness',
+            '\MapleSyrupGroup\HealthCheck\Controller\HealthCheckController@executeLiveness'
+        );
     }
 
     public function provides()

@@ -40,12 +40,12 @@ class HealthCheckCommand extends Command
         $this->healthcheck->checkMigrations();
 
         // Begin outputting console messages
-        foreach($this->healthcheck->getMessages() as $message) {
+        foreach ($this->healthcheck->getMessages() as $message) {
             list($messageType, $text) = $message;
-            if($messageType === HealthCheck::MESSAGE_TYPE_FAILURE) {
+            if ($messageType === HealthCheck::MESSAGE_TYPE_FAILURE) {
                 $this->error($text);
             }
-            if($messageType === HealthCheck::MESSAGE_TYPE_SUCCESS) {
+            if ($messageType === HealthCheck::MESSAGE_TYPE_SUCCESS) {
                 $this->info($text);
             }
         }
@@ -60,5 +60,4 @@ class HealthCheckCommand extends Command
     {
         return $this->option('env') === null || $this->option('env') === 'production';
     }
-    
 }
